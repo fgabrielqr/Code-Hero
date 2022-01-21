@@ -11,22 +11,26 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import api from '../../services/api';
-import imagemFundo from '../../assets/fundo-vingadores.jpg';
+import imagemFundo from '../../assets/logo.jpg';
 import marvelLogo from '../../assets/marvel-logo.png';
 import {styles} from './style';
 
 export default function Details({navigation}) {
-  const [comic, setComic] = useState([]);
+  const [characters, setCharacters] = useState([]);
   const [creators, setCreators] = useState([]);
-  const character = navigation.getParam('comic');
+  const character = navigation.getParam('characters');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadComic() {
-      const response = await api.get(`/v1/public/characters`);
-      const responseCreators = await api.get(`/v1/public/characters`);
+      const response = await api.get(
+        `/v1/public/characters/${character.id}?ts=1&apikey=17dd4b8faf0f00eeeb6633eaaf7774bc&hash=44d49ea637270c4b188070acb9d4abb8`,
+      );
+      const responseCreators = await api.get(
+        `/v1/public/characters/${character.id}/creators?ts=1&apikey=17dd4b8faf0f00eeeb6633eaaf7774bc&hash=44d49ea637270c4b188070acb9d4abb8`,
+      );
 
-      setComic(response.data.data.results);
+      setCharacters(response.data.data.results);
       setCreators(responseCreators.data.data.results);
       setLoading(false);
     }
@@ -54,13 +58,13 @@ export default function Details({navigation}) {
           />
         ) : (
           <ScrollView style={styles.ViewTotal}>
-            {comic.map(provider => (
+            {characters.map(provider => (
               <Text key={provider} numberOfLines={1} style={styles.TextTitle}>
-                {provider.title}
+                {provider.name}
               </Text>
             ))}
             <View style={styles.ViewImageInfo}>
-              {comic.map(provider => (
+              {characters.map(provider => (
                 <Image
                   style={{
                     flex: 1,
@@ -83,7 +87,7 @@ export default function Details({navigation}) {
               </View>
             </View>
             <View style={styles.ViewTextDescription}>
-              {comic.map(provider => (
+              {characters.map(provider => (
                 <Text style={styles.TextDescription}>
                   {provider.description}
                 </Text>
@@ -97,7 +101,7 @@ export default function Details({navigation}) {
 }
 
 Details.navigationOptions = ({navigation}) => ({
-  title: '',
+  name: '',
   headerLeft: () => (
     <TouchableOpacity
       onPress={() => {
