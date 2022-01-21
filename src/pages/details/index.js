@@ -1,9 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {
-  StyleSheet,
   Text,
   View,
-  FlatList,
   TouchableOpacity,
   Image,
   ScrollView,
@@ -13,9 +11,9 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import api from '../../services/api';
-
 import imagemFundo from '../../assets/fundo-vingadores.jpg';
 import marvelLogo from '../../assets/marvel-logo.png';
+import {styles} from './style';
 
 export default function Details({navigation}) {
   const [comic, setComic] = useState([]);
@@ -25,19 +23,13 @@ export default function Details({navigation}) {
 
   useEffect(() => {
     async function loadComic() {
-      const response = await api.get(
-        `/v1/public/comics/${character.id}?ts=1&apikey=17dd4b8faf0f00eeeb6633eaaf7774bc&hash=44d49ea637270c4b188070acb9d4abb8`,
-      );
-
-      const responseCreators = await api.get(
-        `/v1/public/comics/${character.id}/creators?ts=1&apikey=17dd4b8faf0f00eeeb6633eaaf7774bc&hash=44d49ea637270c4b188070acb9d4abb8`,
-      );
+      const response = await api.get(`/v1/public/characters`);
+      const responseCreators = await api.get(`/v1/public/characters`);
 
       setComic(response.data.data.results);
       setCreators(responseCreators.data.data.results);
       setLoading(false);
     }
-
     loadComic();
   }, []);
 
@@ -103,69 +95,6 @@ export default function Details({navigation}) {
     </ImageBackground>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-  },
-  header: {
-    height: 90,
-    backgroundColor: '#202020',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderColor: '#707070',
-    borderLeftColor: '#202020',
-    borderRightColor: '#202020',
-    borderTopColor: '#202020',
-    borderStyle: 'solid',
-    borderWidth: 2,
-  },
-  marvelLogo: {
-    marginTop: 25,
-    height: 40,
-  },
-  ViewTotal: {
-    flex: 1,
-    flexDirection: 'column',
-    paddingTop: 20,
-    paddingHorizontal: 20,
-  },
-  TextTitle: {
-    fontSize: 25,
-    color: '#FFF',
-    fontWeight: 'bold',
-  },
-  TextTitle2: {
-    fontSize: 20,
-    color: '#FFF',
-    fontWeight: 'bold',
-  },
-  ViewImageInfo: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-  },
-  ViewTextInfo: {
-    width: 80,
-    flexDirection: 'column',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-  },
-  TextoDescricao: {
-    fontSize: 13,
-    color: '#FFF',
-  },
-  ViewTextDescription: {
-    flex: 1,
-  },
-  TextDescription: {
-    fontSize: 18,
-    color: '#FFF',
-    marginTop: 10,
-  },
-});
 
 Details.navigationOptions = ({navigation}) => ({
   title: '',
