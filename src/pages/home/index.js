@@ -26,10 +26,13 @@ export default function Home({navigation}) {
   const [refreshing, setRefreshing] = useState(false);
   const [arrayholder, setArrayholder] = useState();
   const [search, setSearch] = useState();
+  const [name, setName] = useState();
   // recarrega dados
   async function reLoad() {
     const response = await api.get(
-      '/v1/public/characters?ts=1&apikey=17dd4b8faf0f00eeeb6633eaaf7774bc&hash=44d49ea637270c4b188070acb9d4abb8',
+      name
+        ? `/v1/public/characters?ts=1&apikey=17dd4b8faf0f00eeeb6633eaaf7774bc&hash=44d49ea637270c4b188070acb9d4abb8&nameStartsWith=${name}`
+        : '/v1/public/characters?ts=1&apikey=17dd4b8faf0f00eeeb6633eaaf7774bc&hash=44d49ea637270c4b188070acb9d4abb8',
     );
     setArrayholder(response.data.data.results);
     setCharacters(response.data.data.results);
@@ -40,7 +43,9 @@ export default function Home({navigation}) {
   useEffect(() => {
     async function loadProviders() {
       const response = await api.get(
-        '/v1/public/characters?ts=1&apikey=17dd4b8faf0f00eeeb6633eaaf7774bc&hash=44d49ea637270c4b188070acb9d4abb8',
+        name
+          ? `/v1/public/characters?ts=1&apikey=17dd4b8faf0f00eeeb6633eaaf7774bc&hash=44d49ea637270c4b188070acb9d4abb8&nameStartsWith=${name}`
+          : '/v1/public/characters?ts=1&apikey=17dd4b8faf0f00eeeb6633eaaf7774bc&hash=44d49ea637270c4b188070acb9d4abb8',
       );
       setArrayholder(response.data.data.results);
       setSearch(response.data.data.results);
@@ -48,7 +53,7 @@ export default function Home({navigation}) {
       setRefreshing(false);
     }
     loadProviders();
-  }, []);
+  }, [name]);
 
   // Pesquisa
   useEffect(() => {
@@ -71,13 +76,7 @@ export default function Home({navigation}) {
 
   //  filtra pelo text input
   function searchFilterFunction(text) {
-    console.log(arrayholder);
-    const newData = arrayholder.filter(item => {
-      const itemData = `${item.name.toUpperCase()}`;
-      const textData = text.toUpperCase();
-      return itemData.indexOf(textData) > -1;
-    });
-    setSearch(newData);
+    setName(text);
   }
 
   LogBox.ignoreLogs(['Animated: `useNativeDriver`']);
@@ -124,7 +123,6 @@ export default function Home({navigation}) {
             {images.map((image, index) => renderPage(image, index))}
           </Carousel>
         </View>
-
         <View style={styles.ViewInputFilter}>
           <View style={styles.ViewInput}>
             <Ico size={20} name="search" color="#727171" />
@@ -148,8 +146,6 @@ export default function Home({navigation}) {
             </View>
           ) : (
             <FlatList
-              showsVerticalScrollIndicator={false}
-              horizontal={false}
               numColumns={2}
               style={styles.ViewComicsList}
               data={characters}
