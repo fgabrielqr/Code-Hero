@@ -29,28 +29,34 @@ export default function Home({navigation}) {
   const [name, setName] = useState();
   // recarrega dados
   async function reLoad() {
-    const response = await api.get(
-      name
-        ? `/v1/public/characters?ts=1&apikey=17dd4b8faf0f00eeeb6633eaaf7774bc&hash=44d49ea637270c4b188070acb9d4abb8&nameStartsWith=${name}`
-        : '/v1/public/characters?ts=1&apikey=17dd4b8faf0f00eeeb6633eaaf7774bc&hash=44d49ea637270c4b188070acb9d4abb8',
-    );
-    setArrayholder(response.data.data.results);
-    setCharacters(response.data.data.results);
-    setLoading(false);
-    setRefreshing(false);
-  }
-  // load dados inicial
-  useEffect(() => {
-    async function loadProviders() {
+    try {
       const response = await api.get(
         name
           ? `/v1/public/characters?ts=1&apikey=17dd4b8faf0f00eeeb6633eaaf7774bc&hash=44d49ea637270c4b188070acb9d4abb8&nameStartsWith=${name}`
           : '/v1/public/characters?ts=1&apikey=17dd4b8faf0f00eeeb6633eaaf7774bc&hash=44d49ea637270c4b188070acb9d4abb8',
       );
+
       setArrayholder(response.data.data.results);
-      setSearch(response.data.data.results);
-      pararLoading();
+      setCharacters(response.data.data.results);
+      setLoading(false);
       setRefreshing(false);
+    } catch (error) {}
+  }
+  // load dados inicial
+  useEffect(() => {
+    async function loadProviders() {
+      try {
+        const response = await api.get(
+          name
+            ? `/v1/public/characters?ts=1&apikey=17dd4b8faf0f00eeeb6633eaaf7774bc&hash=44d49ea637270c4b188070acb9d4abb8&nameStartsWith=${name}`
+            : '/v1/public/characters?ts=1&apikey=17dd4b8faf0f00eeeb6633eaaf7774bc&hash=44d49ea637270c4b188070acb9d4abb8',
+        );
+
+        setArrayholder(response.data.data.results);
+        setSearch(response.data.data.results);
+        pararLoading();
+        setRefreshing(false);
+      } catch (error) {}
     }
     loadProviders();
   }, [name]);
@@ -99,6 +105,10 @@ export default function Home({navigation}) {
     );
   }
 
+  useEffect(() => {
+    LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
+  }, []);
+
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="#e61919" barStyle="light-content" />
@@ -109,7 +119,9 @@ export default function Home({navigation}) {
           resizeMode="contain"
         />
       </View>
+
       <ScrollView
+        nestedScrollEnabled={true}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }>

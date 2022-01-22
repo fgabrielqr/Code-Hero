@@ -10,7 +10,6 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import api from '../../services/api';
 import imagemFundo from '../../assets/logo.jpg';
 import {styles} from './style';
 
@@ -62,7 +61,9 @@ export default function Details(props) {
               />
             </View>
             <View style={styles.ViewTextDescription}>
-              <Text style={styles.TextDescription}>{description}</Text>
+              <Text style={styles.TextDescription}>
+                {description ? description : <Text>Herói sem descrição!</Text>}
+              </Text>
             </View>
           </ScrollView>
         )}
